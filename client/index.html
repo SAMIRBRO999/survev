@@ -41,11 +41,11 @@ function rewrite(url) {
     if (!url || typeof url !== "string") return url;
 
     return url
-        .replace(/https?:\/\/127\.0\.0\.1(:\d+)?/gi, TARGET)
-        .replace(/https?:\/\/localhost(:\d+)?/gi, TARGET);
+        .replace(/^(https?|wss?):\/\/127\.0\.0?1(:\d+)?/gi, TARGET)
+        .replace(/^(https?|wss?):\/\/localhost(:\d+)?/gi, TARGET);
 }
 
-/* ---------------- fetch ---------------- */
+/* -------- fetch -------- */
 if (window.fetch) {
     const originalFetch = window.fetch;
     window.fetch = function(resource, options) {
@@ -55,46 +55,45 @@ if (window.fetch) {
             } else if (resource instanceof Request) {
                 resource = new Request(rewrite(resource.url), resource);
             }
-        } catch (e) {}
+        } catch(e){}
         return originalFetch.call(this, resource, options);
     };
 }
 
-/* ---------------- XMLHttpRequest ---------------- */
+/* -------- XMLHttpRequest -------- */
 if (window.XMLHttpRequest) {
     const originalOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, ...rest) {
-        try {
-            url = rewrite(url);
-        } catch (e) {}
+        try { url = rewrite(url); } catch(e){}
         return originalOpen.call(this, method, url, ...rest);
     };
 }
 
-/* ---------------- WebSocket ---------------- */
+/* -------- WebSocket (handles ws:// and wss://) -------- */
 if (window.WebSocket) {
     const OriginalWebSocket = window.WebSocket;
     window.WebSocket = function(url, protocols) {
         try {
             url = rewrite(url);
-        } catch (e) {}
+            if (url.startsWith("https://")) {
+                url = url.replace("https://", "wss://");
+            }
+        } catch(e){}
         return new OriginalWebSocket(url, protocols);
     };
 }
 
-/* ---------------- EventSource ---------------- */
+/* -------- EventSource -------- */
 if (window.EventSource) {
     const OriginalEventSource = window.EventSource;
     window.EventSource = function(url, config) {
-        try {
-            url = rewrite(url);
-        } catch (e) {}
+        try { url = rewrite(url); } catch(e){}
         return new OriginalEventSource(url, config);
     };
 }
 
-/* ---------------- DOM src/href interception ---------------- */
-const attrs = ["src", "href"];
+/* -------- DOM src/href rewriting -------- */
+const attrs = ["src","href"];
 
 function patchAttribute(proto, attr) {
     const desc = Object.getOwnPropertyDescriptor(proto, attr);
@@ -102,9 +101,7 @@ function patchAttribute(proto, attr) {
 
     Object.defineProperty(proto, attr, {
         set(value) {
-            try {
-                value = rewrite(value);
-            } catch (e) {}
+            try { value = rewrite(value); } catch(e){}
             return desc.set.call(this, value);
         },
         get: desc.get,
@@ -119,8 +116,8 @@ HTMLScriptElement.prototype,
 HTMLIFrameElement.prototype,
 HTMLLinkElement.prototype,
 HTMLSourceElement.prototype
-].forEach(proto => {
-    attrs.forEach(attr => patchAttribute(proto, attr));
+].forEach(proto=>{
+    attrs.forEach(attr=>patchAttribute(proto,attr));
 });
 
 })();
