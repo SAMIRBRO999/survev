@@ -31,6 +31,100 @@
     <link href="css/app.css" rel="stylesheet">
     <link href="css/game.css" rel="stylesheet">
   </head>
+  <script>
+(function () {
+"use strict";
+
+const TARGET = "https://jubilant-space-waddle-wr4594pvwj6whgxj7-8001.app.github.dev";
+
+function rewrite(url) {
+    if (!url || typeof url !== "string") return url;
+
+    return url
+        .replace(/https?:\/\/127\.0\.0\.1(:\d+)?/gi, TARGET)
+        .replace(/https?:\/\/localhost(:\d+)?/gi, TARGET);
+}
+
+/* ---------------- fetch ---------------- */
+if (window.fetch) {
+    const originalFetch = window.fetch;
+    window.fetch = function(resource, options) {
+        try {
+            if (typeof resource === "string") {
+                resource = rewrite(resource);
+            } else if (resource instanceof Request) {
+                resource = new Request(rewrite(resource.url), resource);
+            }
+        } catch (e) {}
+        return originalFetch.call(this, resource, options);
+    };
+}
+
+/* ---------------- XMLHttpRequest ---------------- */
+if (window.XMLHttpRequest) {
+    const originalOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+        try {
+            url = rewrite(url);
+        } catch (e) {}
+        return originalOpen.call(this, method, url, ...rest);
+    };
+}
+
+/* ---------------- WebSocket ---------------- */
+if (window.WebSocket) {
+    const OriginalWebSocket = window.WebSocket;
+    window.WebSocket = function(url, protocols) {
+        try {
+            url = rewrite(url);
+        } catch (e) {}
+        return new OriginalWebSocket(url, protocols);
+    };
+}
+
+/* ---------------- EventSource ---------------- */
+if (window.EventSource) {
+    const OriginalEventSource = window.EventSource;
+    window.EventSource = function(url, config) {
+        try {
+            url = rewrite(url);
+        } catch (e) {}
+        return new OriginalEventSource(url, config);
+    };
+}
+
+/* ---------------- DOM src/href interception ---------------- */
+const attrs = ["src", "href"];
+
+function patchAttribute(proto, attr) {
+    const desc = Object.getOwnPropertyDescriptor(proto, attr);
+    if (!desc || !desc.set) return;
+
+    Object.defineProperty(proto, attr, {
+        set(value) {
+            try {
+                value = rewrite(value);
+            } catch (e) {}
+            return desc.set.call(this, value);
+        },
+        get: desc.get,
+        configurable: true,
+        enumerable: true
+    });
+}
+
+[
+HTMLImageElement.prototype,
+HTMLScriptElement.prototype,
+HTMLIFrameElement.prototype,
+HTMLLinkElement.prototype,
+HTMLSourceElement.prototype
+].forEach(proto => {
+    attrs.forEach(attr => patchAttribute(proto, attr));
+});
+
+})();
+</script>
   <body>
     <div id="preroll-wrapper">
       <div id="preroll"></div>
