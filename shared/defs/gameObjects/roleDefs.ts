@@ -34,6 +34,7 @@ type DefaultItems = {
     helmet: string | ((teamcolor: TeamColor) => string);
     chest: string;
     outfit: string | ((teamcolor: TeamColor) => string);
+    noDropOutfit?: boolean;
     inventory: Partial<Record<InventoryItem, number>>;
 };
 
@@ -155,6 +156,7 @@ export const RoleDefs: Record<string, RoleDef> = {
                     [TeamColor.Red]: "outfitRedLeader",
                     [TeamColor.Blue]: "outfitBlueLeader",
                 })[teamcolor],
+            noDropOutfit: true,
             inventory: {
                 "8xscope": 1,
                 bandage: 10,
@@ -186,6 +188,7 @@ export const RoleDefs: Record<string, RoleDef> = {
                     [TeamColor.Red]: "outfitRedLeader",
                     [TeamColor.Blue]: "outfitBlueLeader",
                 })[teamcolor],
+            noDropOutfit: true,
             inventory: {
                 "8xscope": 1,
                 bandage: 10,
@@ -459,7 +462,7 @@ export const RoleDefs: Record<string, RoleDef> = {
         }),
         announce: false,
         sound: { assign: "spawn_01" },
-        perks: ["field_medic", "windwalk"],
+        perks: ["field_medic", "self_revive"],
         visorImg: {
             baseSprite: "player-visor-healer.img",
             spriteScale: 0.3,

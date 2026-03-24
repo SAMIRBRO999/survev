@@ -1,5 +1,6 @@
 import type { Vec2 } from "../utils/v2";
 import { Main } from "./maps/baseDefs";
+import { Beach } from "./maps/beachDefs";
 import { Birthday } from "./maps/birthdayDefs";
 import { Cobalt } from "./maps/cobaltDefs";
 import { Desert } from "./maps/desertDefs";
@@ -31,7 +32,9 @@ export type Atlas =
     | "snow"
     | "woods"
     | "cobalt"
-    | "savannah";
+    | "savannah"
+    | "turkey"
+    | "beach";
 
 export const MapDefs = {
     main: Main,
@@ -51,6 +54,7 @@ export const MapDefs = {
     cobalt: Cobalt,
     turkey: Turkey,
     birthday: Birthday,
+    beach: Beach,
 
     /* STRIP_FROM_PROD_CLIENT:START */
     test_normal: testNormal,
@@ -112,7 +116,7 @@ export interface MapDef {
         sniperMode?: boolean;
         perkMode?: boolean;
         perkModeRoles?: string[];
-        turkeyMode?: number;
+        turkeyMode?: boolean;
         spookyKillSounds?: boolean;
     };
     gameConfig: {
@@ -181,6 +185,7 @@ export interface MapDef {
                     odds: number;
                     innerRad: number;
                     outerRad: number;
+                    centerObj?: string;
                     spawnBound: {
                         pos: Vec2;
                         rad: number;

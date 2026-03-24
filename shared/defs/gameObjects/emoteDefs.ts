@@ -14,7 +14,7 @@ export enum EmoteCategory {
 export interface EmoteDef {
     readonly type: "emote";
     name?: string;
-    rarity?: number;
+    rarity?: Rarity;
     texture: string;
     sound: string;
     channel: string;
@@ -735,6 +735,26 @@ export const EmotesDefs: Record<string, EmoteDef> = {
         teamOnly: false,
         category: EmoteCategory.Flags,
     },
+    emote_flagbosnia: {
+        type: "emote",
+        name: "Flag Bosnia",
+        rarity: Rarity.Common,
+        texture: "flag-bosnia-and-herzegovina.img",
+        sound: "emote_01",
+        channel: "ui",
+        teamOnly: false,
+        category: EmoteCategory.Flags,
+    },
+    emote_flaglibya: {
+        type: "emote",
+        name: "Flag Libya",
+        rarity: Rarity.Common,
+        texture: "flag-libya.img",
+        sound: "emote_01",
+        channel: "ui",
+        teamOnly: false,
+        category: EmoteCategory.Flags,
+    },
     emote_heart: {
         type: "emote",
         name: "Heart",
@@ -1117,7 +1137,7 @@ export const EmotesDefs: Record<string, EmoteDef> = {
     },
     emote_flagguatemala: {
         type: "emote",
-        name: "Flag Gautemala",
+        name: "Flag Guatemala",
         rarity: Rarity.Common,
         texture: "flag-guatemala.img",
         sound: "emote_01",

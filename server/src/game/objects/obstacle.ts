@@ -46,6 +46,9 @@ export class Obstacle extends BaseGameObject {
 
     interactionRad = 0;
     interactedBy?: Player;
+    interactCooldown = 0;
+
+    obstacleAABB?: AABB = undefined;
 
     get interactable() {
         return this.button?.canUse ?? this.door?.canUse;
@@ -241,6 +244,10 @@ export class Obstacle extends BaseGameObject {
                 this.regrow();
             }
         }
+
+        if (this.interactCooldown > 0) {
+            this.interactCooldown -= dt;
+        }
     }
 
     delayedToggle(delay: number, player?: Player, dir?: Vec2) {
@@ -253,13 +260,29 @@ export class Obstacle extends BaseGameObject {
         const def = MapObjectDefs[this.type] as ObstacleDef;
         this.collider = collider.transform(def.collision, this.pos, this.rot, this.scale);
 
-        this.bounds = collider.toAabb(
-            collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale),
-        );
+        if (def.aabb) {
+            this.bounds = collider.transform(
+                def.aabb,
+                v2.create(0, 0),
+                this.rot,
+                this.scale,
+            ) as AABB;
+            this.obstacleAABB = collider.transform(
+                def.aabb,
+                this.pos,
+                this.rot,
+                this.scale,
+            ) as AABB;
+        } else {
+            this.bounds = collider.toAabb(
+                collider.transform(def.collision, v2.create(0, 0), this.rot, this.scale),
+            );
 
-        const margin = v2.create(this.interactionRad, this.interactionRad);
-        v2.set(this.bounds.min, v2.sub(this.bounds.min, margin));
-        v2.set(this.bounds.max, v2.add(this.bounds.max, margin));
+            const margin = v2.create(this.interactionRad, this.interactionRad);
+            v2.set(this.bounds.min, v2.sub(this.bounds.min, margin));
+            v2.set(this.bounds.max, v2.add(this.bounds.max, margin));
+        }
+
         this.game.grid.updateObject(this);
     }
 
@@ -283,8 +306,8 @@ export class Obstacle extends BaseGameObject {
         for (let i = 0; i < objs.length; i++) {
             const obj = objs[i];
             if (obj.__type !== ObjectType.Player) continue;
-            if (obj.dead) return false;
-            if (!util.sameLayer(this.layer, obj.layer)) return false;
+            if (obj.dead) continue;
+            if (!util.sameLayer(this.layer, obj.layer)) continue;
 
             const res = collider.intersectCircle(
                 closedColl,
@@ -453,21 +476,20 @@ export class Obstacle extends BaseGameObject {
                 const count = util.randomInt(lootTierOrItem.min!, lootTierOrItem.max!);
 
                 for (let i = 0; i < count; i++) {
-                    const items = this.game.lootBarn.getLootTable(lootTierOrItem.tier!);
+                    const item = this.game.lootBarn.getLootTable(lootTierOrItem.tier!);
+                    if (!item) continue;
 
-                    for (const item of items) {
-                        this.game.lootBarn.addLoot(
-                            item.name,
-                            v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
-                            this.layer,
-                            item.count,
-                            undefined,
-                            undefined, // undefined to use default push speed value
-                            params.dir,
-                            lootTierOrItem.props?.preloadGuns || item.preload,
-                            "obstacle",
-                        );
-                    }
+                    this.game.lootBarn.addLoot(
+                        item.name,
+                        v2.add(lootPos, v2.mul(v2.randomUnit(), 0.2)),
+                        this.layer,
+                        item.count,
+                        undefined,
+                        undefined, // undefined to use default push speed value
+                        params.dir,
+                        lootTierOrItem.props?.preloadGuns || item.preload,
+                        "obstacle",
+                    );
                 }
             } else {
                 this.game.lootBarn.addLoot(
@@ -509,7 +531,8 @@ export class Obstacle extends BaseGameObject {
                 let collision: Collider | undefined = undefined;
                 if (obj.isDoor) {
                     collision = collider.createCircle(obj.pos, 0.5);
-                } else if (obj.type.includes("window_open")) {
+                } else if (obj.height == 0.2 && obj.isWall && !obj.destructible) {
+                    // broken windows
                     collision = obj.collider;
                 }
                 if (!collision) continue;
@@ -523,6 +546,11 @@ export class Obstacle extends BaseGameObject {
 
     interact(player?: Player, auto = false): void {
         if (this.dead) return;
+
+        if (player && !auto) {
+            if (this.interactCooldown > 0) return;
+            this.interactCooldown = 0.1;
+        }
 
         this.interactedBy = player;
 

@@ -1,7 +1,7 @@
 import * as PIXI from "pixi.js-legacy";
 import { GameObjectDefs } from "../../../shared/defs/gameObjectDefs";
 import type { OutfitDef } from "../../../shared/defs/gameObjects/outfitDefs";
-import { GameConfig } from "../../../shared/gameConfig";
+import { type Action, type Anim, GameConfig } from "../../../shared/gameConfig";
 import type { MapMsg } from "../../../shared/net/mapMsg";
 import { type ObjectData, ObjectType } from "../../../shared/net/objectSerializeFns";
 import { collider } from "../../../shared/utils/collider";
@@ -241,10 +241,10 @@ export class LoadoutDisplay {
 
     updateCharDisplay(
         options = {} as Partial<{
-            animType: number;
+            animType: Anim;
             animSeq: number;
             actionSeq: number;
-            actionType: number;
+            actionType: Action;
             actionItem: string;
         }>,
     ) {
@@ -291,12 +291,7 @@ export class LoadoutDisplay {
             dir: v2.create(0, -1),
         };
 
-        this.objectCreator.m_updateObjFull(
-            ObjectType.Player,
-            98,
-            obj as unknown as ObjectData<ObjectType.Player>,
-            ctx,
-        );
+        this.objectCreator.m_updateObjFull(ObjectType.Player, 98, obj, ctx);
 
         this.playerBarn.setPlayerInfo({
             playerId: 98,
@@ -472,7 +467,7 @@ export class LoadoutDisplay {
     render(_dt: number, debug: DebugRenderOpts) {
         const grassColor = this.map.mapLoaded
             ? this.map.getMapDef().biome.colors.grass
-            : 8433481;
+            : 0x80af49;
 
         this.pixi.renderer.background.color = grassColor;
 

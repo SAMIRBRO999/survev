@@ -3,10 +3,10 @@ import type { ThrowableDef } from "../../../../shared/defs/gameObjects/throwable
 import type { MapDef } from "../../../../shared/defs/mapDefs";
 import { MapObjectDefs } from "../../../../shared/defs/mapObjectDefs";
 import type { ObstacleDef } from "../../../../shared/defs/mapObjectsTyping";
-import { GameConfig } from "../../../../shared/gameConfig";
+import { GameConfig, type Plane as PlaneType } from "../../../../shared/gameConfig";
 import { Constants } from "../../../../shared/net/net";
 import { ObjectType } from "../../../../shared/net/objectSerializeFns";
-import { type Collider, coldet } from "../../../../shared/utils/coldet";
+import { type AABB, type Collider, coldet } from "../../../../shared/utils/coldet";
 import { collider } from "../../../../shared/utils/collider";
 import { math } from "../../../../shared/utils/math";
 import { assert, util } from "../../../../shared/utils/util";
@@ -35,7 +35,7 @@ export class PlaneBarn {
     idNext = 1;
 
     /** bounds where the plane can exist, not the bounds of the plane itself */
-    planeBounds = collider.createAabb(v2.create(-512, -512), v2.create(1536, 1536));
+    planeBounds: AABB;
 
     scheduledPlanes: Array<{
         time: number;
@@ -51,7 +51,12 @@ export class PlaneBarn {
 
     sentHelp = false;
 
-    constructor(readonly game: Game) {}
+    constructor(readonly game: Game) {
+        this.planeBounds = collider.createAabb(
+            v2.create(-256, -256),
+            v2.create(game.map.width + 256, game.map.height + 256),
+        );
+    }
     update(dt: number) {
         for (let i = 0; i < this.planes.length; i++) {
             const plane = this.planes[i];
@@ -594,7 +599,7 @@ abstract class Plane {
     config: typeof GameConfig.airdrop | typeof GameConfig.airstrike;
     pos: Vec2;
     targetPos: Vec2;
-    action: number;
+    action: PlaneType;
     id: number;
     planeDir: Vec2;
     rad: number;
@@ -603,7 +608,7 @@ abstract class Plane {
     constructor(
         game: Game,
         id: number,
-        action: number,
+        action: PlaneType,
         pos: Vec2,
         targetPos: Vec2,
         dir: Vec2,

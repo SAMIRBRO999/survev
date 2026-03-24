@@ -1,3 +1,4 @@
+import { type DeepPartial, util } from "../../utils/util";
 import type { Vec2 } from "../../utils/v2";
 
 export interface GunDef {
@@ -22,7 +23,6 @@ export interface GunDef {
     shotSpread: number;
     bulletCount: number;
     bulletType: string;
-    bulletTypeBonus?: string;
     headshotMult: number;
     speed: {
         equip: number;
@@ -98,9 +98,14 @@ export interface GunDef {
     reloadTimeAlt?: number;
     toMouseHit?: boolean;
     burstSounds?: number;
+    perk?: string;
 }
 
-export const GunDefs: Record<string, GunDef> = {
+function defineGunSkin(baseType: string, params: DeepPartial<GunDef>): GunDef {
+    return util.mergeDeep({}, BaseDefs[baseType], params);
+}
+
+export const BaseDefs: Record<string, GunDef> = {
     mp5: {
         name: "MP5",
         type: "gun",
@@ -123,7 +128,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 3,
         bulletCount: 1,
         bulletType: "bullet_mp5",
-        bulletTypeBonus: "bullet_mp5_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -171,7 +175,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 10,
         bulletCount: 1,
         bulletType: "bullet_mac10",
-        bulletTypeBonus: "bullet_mac10_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -221,7 +224,6 @@ export const GunDefs: Record<string, GunDef> = {
         bulletCount: 1,
         burstCount: 3,
         bulletType: "bullet_ump9",
-        bulletTypeBonus: "bullet_ump9_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -269,7 +271,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 2.5,
         bulletCount: 1,
         bulletType: "bullet_vector",
-        bulletTypeBonus: "bullet_vector_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -280,9 +281,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-med-01.img",
+            sprite: "gun-vector-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 0x897960,
+            tint: 0xffffff,
             leftHandOffset: { x: 7, y: 0 },
             recoil: 0.89,
         },
@@ -310,7 +311,7 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 1.6,
         fireDelay: 0.044,
         switchDelay: 0.75,
-        barrelLength: 2.5,
+        barrelLength: 2.45,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 6.5,
@@ -327,9 +328,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-med-01.img",
+            sprite: "gun-vector45-01.img",
             scale: { x: 0.5, y: 0.5 },
-            tint: 0x897960,
+            tint: 0xffffff,
             leftHandOffset: { x: 7, y: 0 },
             recoil: 0.89,
         },
@@ -364,7 +365,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 4,
         bulletCount: 1,
         bulletType: "bullet_scorpion",
-        bulletTypeBonus: "bullet_scorpion_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -393,7 +393,7 @@ export const GunDefs: Record<string, GunDef> = {
     vss: {
         name: "VSS",
         type: "gun",
-        quality: 1,
+        quality: 0,
         fireMode: "single",
         caseTiming: "shoot",
         ammo: "9mm",
@@ -412,8 +412,7 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 2,
         bulletCount: 1,
         bulletType: "bullet_vss",
-        bulletTypeBonus: "bullet_vss_bonus",
-        headshotMult: 2,
+        headshotMult: 1.75,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-vss.img",
@@ -606,7 +605,7 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 1,
         bulletCount: 1,
         bulletType: "bullet_mk12",
-        headshotMult: 2,
+        headshotMult: 1.75,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-mk12.img",
@@ -646,14 +645,14 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 2.9,
         fireDelay: 0.19,
         switchDelay: 0.75,
-        barrelLength: 3.25,
+        barrelLength: 3.7,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 3.5,
         shotSpread: 1,
         bulletCount: 1,
         bulletType: "bullet_l86",
-        headshotMult: 2,
+        headshotMult: 1.75,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-l86.img",
@@ -663,10 +662,10 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.46 },
-            tint: 0xdcc8a7,
-            leftHandOffset: { x: -3, y: 0 },
+            sprite: "gun-l86-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
+            leftHandOffset: { x: 2, y: 0 },
             recoil: 1.66,
         },
         particle: { shellScale: 1.3, shellOffset: 0.55 },
@@ -799,7 +798,7 @@ export const GunDefs: Record<string, GunDef> = {
         fireDelay: 1,
         switchDelay: 1,
         pullDelay: 1,
-        barrelLength: 3.5,
+        barrelLength: 3.65,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 1,
@@ -816,10 +815,10 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.52 },
-            tint: 0x32363b,
-            leftHandOffset: { x: 2.8, y: 0 },
+            sprite: "gun-scout_elite-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
+            leftHandOffset: { x: 6, y: 0 },
             recoil: 2.33,
         },
         particle: { shellScale: 1.6, shellOffset: 0.6 },
@@ -895,7 +894,7 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 2.7,
         fireDelay: 0.09,
         switchDelay: 0.75,
-        barrelLength: 3.15,
+        barrelLength: 3.43,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 5,
@@ -912,9 +911,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.435 },
-            tint: 0x9b7b48,
+            sprite: "gun-scar-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 2.8, y: 0 },
             recoil: 1.33,
         },
@@ -949,7 +948,7 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 1.5,
         bulletCount: 1,
         bulletType: "bullet_scarssr",
-        headshotMult: 1.5,
+        headshotMult: 1.25,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-scarssr.img",
@@ -1027,7 +1026,7 @@ export const GunDefs: Record<string, GunDef> = {
     groza: {
         name: "Groza",
         type: "gun",
-        quality: 1,
+        quality: 0,
         fireMode: "auto",
         caseTiming: "shoot",
         isBullpup: true,
@@ -1221,6 +1220,53 @@ export const GunDefs: Record<string, GunDef> = {
             deploy: "bar_switch_01",
         },
     },
+    imbel: {
+        name: "IMD-2",
+        type: "gun",
+        quality: 0,
+        fireMode: "auto",
+        caseTiming: "shoot",
+        ammo: "556mm",
+        ammoSpawnCount: 120,
+        maxClip: 40,
+        maxReload: 40,
+        extendedClip: 50,
+        extendedReload: 50,
+        reloadTime: 2.1,
+        fireDelay: 0.092,
+        switchDelay: 0.75,
+        barrelLength: 3.9,
+        barrelOffset: 0,
+        recoilTime: 1e10,
+        moveSpread: 5,
+        shotSpread: 3,
+        bulletCount: 1,
+        bulletType: "bullet_imbel",
+        headshotMult: 2,
+        speed: { equip: 0, attack: -1 },
+        lootImg: {
+            sprite: "loot-weapon-imbel.img",
+            tint: 0xff00,
+            border: "loot-circle-outer-01.img",
+            borderTint: 0,
+            scale: 0.3,
+        },
+        worldImg: {
+            sprite: "gun-imbel-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
+            leftHandOffset: { x: 10, y: 0 },
+            recoil: 1.4,
+        },
+        particle: { shellScale: 1, shellOffset: 0.6 },
+        sound: {
+            shoot: "imbel_01",
+            reload: "imbel_reload_01",
+            pickup: "gun_pickup_01",
+            empty: "empty_fire_02",
+            deploy: "imbel_switch_01",
+        },
+    },
     pkp: {
         name: "PKP Pecheneg",
         type: "gun",
@@ -1292,7 +1338,7 @@ export const GunDefs: Record<string, GunDef> = {
         fireDelay: 0.7,
         switchDelay: 1,
         pullDelay: 1,
-        barrelLength: 3.7,
+        barrelLength: 3.78,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 3,
@@ -1309,9 +1355,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.5175 },
-            tint: 0xa06120,
+            sprite: "gun-model94-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 3.2, y: 0 },
             recoil: 2.33,
         },
@@ -1341,14 +1387,14 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 2.1,
         fireDelay: 0.17,
         switchDelay: 0.75,
-        barrelLength: 3.3,
+        barrelLength: 3.6,
         barrelOffset: 0,
         recoilTime: 0.2,
         moveSpread: 7.5,
         shotSpread: 3.5,
         bulletCount: 1,
         bulletType: "bullet_mkg45",
-        headshotMult: 2,
+        headshotMult: 1.75,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-mkg45.img",
@@ -1358,9 +1404,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.47 },
-            tint: 0x353535,
+            sprite: "gun-mkg45-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 4.2, y: 0 },
             recoil: 1.66,
         },
@@ -1389,7 +1435,7 @@ export const GunDefs: Record<string, GunDef> = {
         fireDelay: 0.8,
         switchDelay: 1,
         pullDelay: 1,
-        barrelLength: 3.8,
+        barrelLength: 3.85,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 3,
@@ -1406,9 +1452,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.53 },
-            tint: 0x472706,
+            sprite: "gun-blr-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 6.4, y: 0 },
             recoil: 2.75,
         },
@@ -1443,14 +1489,14 @@ export const GunDefs: Record<string, GunDef> = {
         fireDelay: 1.75,
         switchDelay: 1,
         pullDelay: 1,
-        barrelLength: 3.75,
+        barrelLength: 3.95,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 3,
         shotSpread: 1,
         bulletCount: 1,
         bulletType: "bullet_mosin",
-        headshotMult: 1.5,
+        headshotMult: 1.25,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-mosin.img",
@@ -1460,10 +1506,10 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.52 },
-            tint: 0x331a00,
-            leftHandOffset: { x: 2.8, y: 0 },
+            sprite: "gun-mosin-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
+            leftHandOffset: { x: 7, y: 0 },
             recoil: 2.33,
         },
         particle: { shellScale: 1.6, shellOffset: 0.6 },
@@ -1495,14 +1541,14 @@ export const GunDefs: Record<string, GunDef> = {
         fireDelay: 1.5,
         switchDelay: 1,
         pullDelay: 0.8,
-        barrelLength: 3.5,
+        barrelLength: 4.1,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 2.5,
         shotSpread: 1,
         bulletCount: 1,
         bulletType: "bullet_sv98",
-        headshotMult: 1.5,
+        headshotMult: 1.25,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-sv98.img",
@@ -1512,10 +1558,10 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.4925 },
-            tint: 0x658947,
-            leftHandOffset: { x: 2.8, y: 0 },
+            sprite: "gun-sv98-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
+            leftHandOffset: { x: 6.5, y: 0.25 },
             recoil: 2.33,
         },
         particle: { shellScale: 1.6, shellOffset: 0.6 },
@@ -1603,7 +1649,7 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 1,
         bulletCount: 1,
         bulletType: "bullet_m39",
-        headshotMult: 2,
+        headshotMult: 1.75,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-m39.img",
@@ -1643,14 +1689,14 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 2.5,
         fireDelay: 0.25,
         switchDelay: 0.75,
-        barrelLength: 4,
+        barrelLength: 4.2,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 4.5,
         shotSpread: 1,
         bulletCount: 1,
         bulletType: "bullet_svd",
-        headshotMult: 2,
+        headshotMult: 1.75,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-svd.img",
@@ -1660,9 +1706,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.56 },
-            tint: 0x1c1c1c,
+            sprite: "gun-svd-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 8, y: 0 },
             recoil: 2,
         },
@@ -1694,10 +1740,10 @@ export const GunDefs: Record<string, GunDef> = {
         barrelOffset: 0,
         recoilTime: 0.36,
         moveSpread: 4,
-        shotSpread: 1,
+        shotSpread: 0.4,
         bulletCount: 1,
         bulletType: "bullet_garand",
-        headshotMult: 2,
+        headshotMult: 1.74,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-garand.img",
@@ -1790,7 +1836,7 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 0.7,
         fireDelay: 0.3,
         switchDelay: 0.9,
-        barrelLength: 3.15,
+        barrelLength: 3.7,
         barrelOffset: 0,
         recoilTime: 1e10,
         moveSpread: 2,
@@ -1808,9 +1854,9 @@ export const GunDefs: Record<string, GunDef> = {
         },
         speed: { equip: 0, attack: 0 },
         worldImg: {
-            sprite: "gun-long-01.img",
-            scale: { x: 0.5, y: 0.435 },
-            tint: 0x2e442e,
+            sprite: "gun-m1100-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 7, y: 0 },
             recoil: 1.33,
         },
@@ -1971,6 +2017,56 @@ export const GunDefs: Record<string, GunDef> = {
             deploy: "spas12_cycle_01",
         },
     },
+    spas16: {
+        name: "SPAS-16",
+        type: "gun",
+        quality: 1,
+        fireMode: "auto",
+        caseTiming: "shoot",
+        ammo: "12gauge",
+        deployGroup: 1,
+        ammoSpawnCount: 18,
+        maxClip: 6,
+        maxReload: 6,
+        extendedClip: 8,
+        extendedReload: 8,
+        reloadTime: 2.9,
+        fireDelay: 0.29,
+        switchDelay: 0.75,
+        pullDelay: 0.75,
+        barrelLength: 3.65,
+        barrelOffset: 0,
+        recoilTime: 3,
+        moveSpread: 1.5,
+        shotSpread: 5.5,
+        bulletCount: 8,
+        jitter: 0.3,
+        bulletType: "bullet_flechette",
+        headshotMult: 1.5,
+        speed: { equip: 0, attack: -1 },
+        lootImg: {
+            sprite: "loot-weapon-spas16.img",
+            tint: 0xff00,
+            border: "loot-circle-outer-01.img",
+            borderTint: 0,
+            scale: 0.3,
+        },
+        worldImg: {
+            sprite: "gun-spas16-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
+            leftHandOffset: { x: 6.5, y: 0.5 },
+            recoil: 1.33,
+        },
+        particle: { shellScale: 1, shellOffset: 0.45 },
+        sound: {
+            shoot: "spas16_01",
+            reload: "spas16_reload_01",
+            pickup: "gun_pickup_01",
+            empty: "empty_fire_01",
+            deploy: "spas16_switch_01",
+        },
+    },
     m1014: {
         name: "M1014",
         type: "gun",
@@ -1994,7 +2090,7 @@ export const GunDefs: Record<string, GunDef> = {
         bulletCount: 1,
         jitter: 0.2,
         bulletType: "bullet_slug",
-        headshotMult: 1.5,
+        headshotMult: 1.25,
         speed: { equip: 0, attack: 0 },
         lootImg: {
             sprite: "loot-weapon-m1014.img",
@@ -2089,11 +2185,10 @@ export const GunDefs: Record<string, GunDef> = {
         barrelLength: 2.2,
         barrelOffset: 0,
         recoilTime: 1e10,
-        moveSpread: 3,
+        moveSpread: 5,
         shotSpread: 3,
         bulletCount: 1,
         bulletType: "bullet_m9",
-        bulletTypeBonus: "bullet_m9_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2144,7 +2239,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 4,
         bulletCount: 1,
         bulletType: "bullet_m9",
-        bulletTypeBonus: "bullet_m9_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2247,7 +2341,6 @@ export const GunDefs: Record<string, GunDef> = {
         bulletCount: 1,
         burstCount: 3,
         bulletType: "bullet_m93r",
-        bulletTypeBonus: "bullet_m93r_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2300,7 +2393,6 @@ export const GunDefs: Record<string, GunDef> = {
         bulletCount: 1,
         burstCount: 3,
         bulletType: "bullet_m93r",
-        bulletTypeBonus: "bullet_m93r_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2350,7 +2442,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 12,
         bulletCount: 1,
         bulletType: "bullet_glock",
-        bulletTypeBonus: "bullet_glock_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2401,7 +2492,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 18,
         bulletCount: 1,
         bulletType: "bullet_glock",
-        bulletTypeBonus: "bullet_glock_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2430,7 +2520,7 @@ export const GunDefs: Record<string, GunDef> = {
     p30l: {
         name: "P30L",
         type: "gun",
-        quality: 1,
+        quality: 0,
         fireMode: "single",
         caseTiming: "shoot",
         ammo: "9mm",
@@ -2451,7 +2541,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 2,
         bulletCount: 1,
         bulletType: "bullet_p30l",
-        bulletTypeBonus: "bullet_p30l_bonus",
         headshotMult: 2,
         speed: { equip: 1, attack: 1 },
         lootImg: {
@@ -2502,7 +2591,6 @@ export const GunDefs: Record<string, GunDef> = {
         shotSpread: 3,
         bulletCount: 1,
         bulletType: "bullet_p30l",
-        bulletTypeBonus: "bullet_p30l_bonus",
         headshotMult: 2,
         speed: { equip: 0, attack: 0 },
         lootImg: {
@@ -2743,7 +2831,7 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 3,
         fireDelay: 0.12,
         switchDelay: 0.3,
-        barrelLength: 2.26,
+        barrelLength: 2.55,
         barrelOffset: 0,
         recoilTime: 0.35,
         moveSpread: 3,
@@ -2760,9 +2848,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-short-01.img",
-            scale: { x: 0.5, y: 0.52 },
-            tint: 0xc4c4c4,
+            sprite: "gun-colt45-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1,
         },
@@ -2792,7 +2880,7 @@ export const GunDefs: Record<string, GunDef> = {
         reloadTime: 5.1,
         fireDelay: 0.13,
         switchDelay: 0.3,
-        barrelLength: 2.26,
+        barrelLength: 2.55,
         barrelOffset: 0,
         dualOffset: 0.55,
         recoilTime: 0.35,
@@ -2810,9 +2898,9 @@ export const GunDefs: Record<string, GunDef> = {
             scale: 0.3,
         },
         worldImg: {
-            sprite: "gun-short-01.img",
-            scale: { x: 0.5, y: 0.52 },
-            tint: 0xc4c4c4,
+            sprite: "gun-colt45-01.img",
+            scale: { x: 0.5, y: 0.5 },
+            tint: 0xffffff,
             leftHandOffset: { x: 0, y: 0 },
             recoil: 1,
         },
@@ -3353,3 +3441,29 @@ export const GunDefs: Record<string, GunDef> = {
         },
     },
 };
+
+const SkinDefs: Record<string, GunDef> = {
+    svd_winter: defineGunSkin("svd", {
+        name: "SVD-63",
+        noPotatoSwap: true,
+        worldImg: {
+            sprite: "gun-svd-02.img",
+        },
+    }),
+    sv98_winter: defineGunSkin("sv98", {
+        name: "SV-98",
+        noPotatoSwap: true,
+        worldImg: {
+            sprite: "gun-sv98-02.img",
+        },
+    }),
+    awc_winter: defineGunSkin("awc", {
+        name: "AWM-S",
+        noPotatoSwap: true,
+        worldImg: {
+            sprite: "gun-awc-02.img",
+        },
+    }),
+};
+
+export const GunDefs: Record<string, GunDef> = { ...BaseDefs, ...SkinDefs };
